@@ -21,9 +21,6 @@
 sshd_config = {
  "Port" => "22",
  "Protocol" => "2",
- "HostKey" => "/etc/ssh/ssh_host_rsa_key",
- "HostKey" => "/etc/ssh/ssh_host_dsa_key",
- "HostKey" => "/etc/ssh/ssh_host_ecdsa_key",
  "UsePrivilegeSeparation" => "yes",
  "KeyRegenerationInterval" => "3600",
  "ServerKeyBits" => "768",
@@ -50,7 +47,6 @@ sshd_config = {
 }
 
 # only if SSH daemon configuration is defined
-unless node.sys.sshd.config.empty?
   package "openssh-server"
   service "ssh" do
     supports :reload => true
@@ -58,25 +54,8 @@ unless node.sys.sshd.config.empty?
   # overwrite the default configuration
   template '/etc/ssh/sshd_config' do
     source 'etc_ssh_sshd_config.erb'
-    mode 0644
+    mode 0600
     variables :config => sshd_config
     notifies :reload, "service[ssh]"
+    action :create
   end
-end
-
-unless node.sys.ssh.authorize.empty?
-  node.sys.ssh.authorize.each do |account,params|
-    sys_ssh_authorize account do
-      keys params[:keys]
-      managed params[:managed] if params.has_key? :managed
-    end
-  end
-end
-
-unless node.sys.ssh.config.empty?
-  node.sys.ssh.config.each do |account,params|
-    sys_ssh_config account do
-      config params
-    end
-  end
-end
