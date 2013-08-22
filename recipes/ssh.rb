@@ -30,7 +30,7 @@ sshd_config = {
  "SyslogFacility" => "AUTH",
  "LogLevel" => "INFO",
  "LoginGraceTime" => "120",
- "PermitRootLogin" => "yes",
+ "PermitRootLogin" => "no",
  "StrictModes" => "yes",
  "RSAAuthentication" => "yes",
  "PubkeyAuthentication" => "yes",
@@ -41,7 +41,7 @@ sshd_config = {
  "ChallengeResponseAuthentication" => "no",
  "X11Forwarding" => "yes",
  "X11DisplayOffset" => "10",
- "PrintMotd" => "no",
+ "PrintMotd" => "yes",
  "PrintLastLog" => "yes",
  "TCPKeepAlive" => "yes",
  "AcceptEnv" => "LANG LC_*",
@@ -56,7 +56,6 @@ unless node.sys.sshd.config.empty?
     supports :reload => true
   end
   # overwrite the default configuration
-  sshd_config.merge! node.sys.sshd.config
   template '/etc/ssh/sshd_config' do
     source 'etc_ssh_sshd_config.erb'
     mode 0644
